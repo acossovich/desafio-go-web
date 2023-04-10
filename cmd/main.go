@@ -22,7 +22,8 @@ func main() {
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) { c.String(200, "pong") })
 
-	_ = routes.NewRouter(r, list)
+	router := routes.NewRouter(r, list)
+	router.MapRouter()
 
 	if err := r.Run(); err != nil {
 		panic(err)

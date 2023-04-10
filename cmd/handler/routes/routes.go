@@ -8,7 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(engine *gin.Engine,db []domain.Ticket) (*handler.Service){
+type Router struct{
+	Engine *gin.Engine
+	Handler *handler.Service
+}
+
+func NewRouter(engine *gin.Engine,db []domain.Ticket) (router *Router){
 	// Setup components.
 
 	repository := tickets.NewRepository(db)
@@ -17,12 +22,21 @@ func NewRouter(engine *gin.Engine,db []domain.Ticket) (*handler.Service){
 
 	handler := handler.NewService(service)
 
-	// Set routes.
-	group := engine.Group("/ticket")
-	{
-		group.GET("/getByCountry/:dest", handler.GetTicketsByCountry())
-		group.GET("/getAverage/:dest", handler.AverageDestination())
+	router = &Router{
+		Engine: engine,
+		Handler: handler,
 	}
 
-	return handler
+	return
 }
+
+func (router *Router) MapRouter(){
+
+	group := router.Engine.Group("/ticket")
+	{
+		group.GET("/getByCountry/:dest", router.Handler.GetTicketsByCountry())
+		group.GET("/getAverage/:dest", router.Handler.AverageDestination())
+	}
+
+}
+
